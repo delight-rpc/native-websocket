@@ -17,7 +17,7 @@ let mockServer: Server
 beforeEach(() => {
   mockServer = new Server(SERVER_URL)
   mockServer.on('connection', socket => {
-    const client = createTestClient<IAPI>(socket)
+    const client = createTestClient(socket)
 
     // mock-socket is buggy, `socket.addEventListener` cannot work!
     socket.on('message', async data => {
