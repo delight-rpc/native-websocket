@@ -26,8 +26,7 @@ beforeEach(() => {
         if (DelightRPC.isRequest(req)) {
           const res = await DelightRPC.createResponse<IAPI>({
             async eval(code) {
-              const result = await eval(code)
-              return result
+              return await eval(code)
             }
           }, req)
           socket.send(JSON.stringify(res))
