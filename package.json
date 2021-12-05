@@ -51,7 +51,7 @@
     "@typescript-eslint/parser": "^5.5.0",
     "cross-env": "^7.0.3",
     "delight-rpc": "^1.1.1",
-    "eslint": "8.3.0",
+    "eslint": "8.4.0",
     "extra-filesystem": "^0.3.13",
     "husky": "4",
     "jest": "^27.4.3",
@@ -72,8 +72,8 @@
   },
   "dependencies": {
     "@blackglory/errors": "^1.1.2",
-    "extra-promise": "^0.19.2",
-    "return-style": "^0.12.4"
+    "extra-promise": "^0.19.4",
+    "return-style": "^0.12.5"
   },
   "peerDependencies": {
     "delight-rpc": "^1.1.1"
