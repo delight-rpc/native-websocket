@@ -5,13 +5,22 @@ import { createServer } from '@src/server'
 import { createClient } from '@src/client'
 import * as DelightRPC from 'delight-rpc'
 import { Deferred } from 'extra-promise'
-import { getResult } from 'return-style'
+import { getResult, getErrorPromise } from 'return-style'
 
 interface IAPI {
   eval(code: string): Promise<unknown>
 }
 
 const SERVER_URL = 'ws://localhost:8080'
+
+const api = {
+  echo(message: string): string {
+    return message
+  }
+, error(message: string): never {
+    throw new Error(message)
+  }
+}
 
 let mockServer: Server
 beforeEach(() => {
@@ -40,12 +49,7 @@ afterEach(() => {
 })
 
 describe('createServer', () => {
-  it('echo', async () => {
-    const api = {
-      echo(message: string): string {
-        return message
-      }
-    }
+  test('echo', async () => {
     const wsClient = new WebSocket(SERVER_URL)
     await waitForEventTarget(wsClient, 'open')
 
@@ -53,7 +57,22 @@ describe('createServer', () => {
     const [client, close] = createClient<IAPI>(wsClient)
     try {
       const result = await client.eval('client.echo("hello")')
-      expect(result).toEqual('hello')
+      expect(result).toBe('hello')
+    } finally {
+      cancelServer()
+    }
+  })
+
+  test('error', async () => {
+    const wsClient = new WebSocket(SERVER_URL)
+    await waitForEventTarget(wsClient, 'open')
+
+    const cancelServer = createServer(api, wsClient)
+    const [client, close] = createClient<IAPI>(wsClient)
+    try {
+      const err = await getErrorPromise(client.eval('client.error("hello")'))
+      expect(err).toBeInstanceOf(Error)
+      expect(err!.message).toMatch('Error: hello')
     } finally {
       cancelServer()
     }
@@ -86,10 +105,8 @@ function createTestClient<IAPI extends object>(
   function handler(data: string | Blob | ArrayBuffer | ArrayBufferView) {
     if (isString(data)) {
       const res = getResult(() => JSON.parse(data))
-      if (DelightRPC.isResult(res)) {
+      if (DelightRPC.isResult(res) || DelightRPC.isError(res)) {
         pendings[res.id].resolve(res)
-      } else if (DelightRPC.isError(res)) {
-        pendings[res.id].reject(res)
       }
     }
   }
