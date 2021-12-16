@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/delight-rpc/websocket-browser/compare/v0.1.2...v0.2.0) (2021-12-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* - The minimum version is Node.js v16
+
+* upgrade Node.js version ([f955ffb](https://github.com/delight-rpc/websocket-browser/commit/f955ffb1cf50b09f59177d2bc363ea8ea000dc46))
+
 ### [0.1.2](https://github.com/delight-rpc/websocket-browser/compare/v0.1.1...v0.1.2) (2021-12-16)
 
 ### [0.1.1](https://github.com/delight-rpc/websocket-browser/compare/v0.1.0...v0.1.1) (2021-12-05)
