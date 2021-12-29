@@ -5,6 +5,7 @@ import { getResult } from 'return-style'
 
 export function createClient<IAPI extends object>(
   socket: WebSocket
+, parametersValidators?: DelightRPC.ParameterValidators<IAPI>
 ): [client: DelightRPC.ClientProxy<IAPI>, close: () => void] {
   const pendings: { [id: string]: Deferred<DelightRPC.IResponse<any>> } = {}
 
@@ -21,6 +22,7 @@ export function createClient<IAPI extends object>(
         delete pendings[request.id]
       }
     }
+  , parametersValidators
   )
 
   return [client, close]
