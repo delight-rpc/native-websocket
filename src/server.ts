@@ -2,7 +2,7 @@ import * as DelightRPC from 'delight-rpc'
 import { getResult } from 'return-style'
 
 export function createServer<IAPI extends object>(
-  api: IAPI
+  api: DelightRPC.ImplementationOf<IAPI>
 , socket: WebSocket
 , parameterValidators?: DelightRPC.ParameterValidators<IAPI>
 ): () => void {
