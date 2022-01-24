@@ -5,6 +5,7 @@ export function createServer<IAPI extends object>(
   api: DelightRPC.ImplementationOf<IAPI>
 , socket: WebSocket
 , parameterValidators?: DelightRPC.ParameterValidators<IAPI>
+, version?: `${number}.${number}.${number}`
 ): () => void {
   socket.addEventListener('message', handler)
   return () => socket.removeEventListener('message', handler)
@@ -12,7 +13,12 @@ export function createServer<IAPI extends object>(
   async function handler(event: MessageEvent): Promise<void> {
     const req = getResult(() => JSON.parse(event.data))
     if (DelightRPC.isRequest(req)) {
-      const result = await DelightRPC.createResponse(api, req, parameterValidators)
+      const result = await DelightRPC.createResponse(
+        api
+      , req
+      , parameterValidators
+      , version
+      )
 
       socket.send(JSON.stringify(result))
     }
