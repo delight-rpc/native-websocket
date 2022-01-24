@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/delight-rpc/websocket-browser/compare/v0.2.3...v0.2.4) (2022-01-24)
+
+
+### Features
+
+* add expectedVersion support ([d6e075f](https://github.com/delight-rpc/websocket-browser/commit/d6e075f5d30a46d77f08528d40b3aa6421e89bbd))
+
 ### [0.2.3](https://github.com/delight-rpc/websocket-browser/compare/v0.2.2...v0.2.3) (2022-01-09)
 
 ### [0.2.2](https://github.com/delight-rpc/websocket-browser/compare/v0.2.1...v0.2.2) (2021-12-29)
