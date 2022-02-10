@@ -58,6 +58,6 @@ describe('createClient', () => {
     const err = await getErrorPromise(client.error('hello'))
 
     expect(err).toBeInstanceOf(Error)
-    expect(err!.message).toMatch('Error: hello')
+    expect(err!.message).toMatch('hello')
   })
 })
