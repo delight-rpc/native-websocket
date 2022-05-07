@@ -11,8 +11,11 @@ yarn add @delight-rpc/websocket-browser
 ```ts
 function createClient<IAPI extends object>(
   socket: WebSocket
-, parameterValidators?: DelightRPC.ParameterValidators<IAPI>
-, expectedVersion?: `${number}.${number}.${number}`
+, options?: {
+    parameterValidators?: DelightRPC.ParameterValidators<IAPI>
+    expectedVersion?: `${number}.${number}.${number}`
+    channel?: string
+  }
 ): [client: DelightRPC.ClientProxy<IAPI>, close: () => void]
 ```
 
@@ -20,7 +23,10 @@ function createClient<IAPI extends object>(
 ```ts
 function createBatchClient(
   socket: WebSocket
-, expectedVersion?: `${number}.${number}.${number}`
+, options?: {
+    expectedVersion?: `${number}.${number}.${number}`
+    channel?: string
+  }
 ): [client: DelightRPC.BatchClient, close: () => void]
 ```
 
@@ -29,7 +35,10 @@ function createBatchClient(
 function createServer<IAPI extends object>(
   api: DelightRPC.ImplementationOf<IAPI>
 , socket: WebSocket
-, parameterValidators?: DelightRPC.ParameterValidators<IAPI>
-, version?: `${number}.${number}.${number}`
+, options?: {
+    parameterValidators?: DelightRPC.ParameterValidators<IAPI>
+    version?: `${number}.${number}.${number}`
+    channel?: string
+  }
 ): () => void
 ```

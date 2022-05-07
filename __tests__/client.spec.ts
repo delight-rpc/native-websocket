@@ -21,7 +21,7 @@ beforeEach(() => {
       if (isString(data)) {
         const req = getResult(() => JSON.parse(data))
         if (DelightRPC.isRequest(req)) {
-          const res = await DelightRPC.createResponse<IAPI>({
+          const res = await DelightRPC.createResponse<IAPI, unknown>({
             echo(message) {
               return message
             }

@@ -6,6 +6,7 @@ import { createClient } from '@src/client'
 import * as DelightRPC from 'delight-rpc'
 import { Deferred } from 'extra-promise'
 import { getResult, getErrorPromise } from 'return-style'
+import { IResponse } from '@delight-rpc/protocol'
 
 interface IAPI {
   eval(code: string): Promise<unknown>
@@ -33,7 +34,7 @@ beforeEach(() => {
       if (isString(data)) {
         const req = JSON.parse(data)
         if (DelightRPC.isRequest(req)) {
-          const res = await DelightRPC.createResponse<IAPI>({
+          const res = await DelightRPC.createResponse<IAPI, unknown>({
             async eval(code) {
               return await eval(code)
             }
@@ -82,14 +83,14 @@ describe('createServer', () => {
 function createTestClient<IAPI extends object>(
   socket: Client
 ): DelightRPC.ClientProxy<IAPI> {
-  const pendings: { [id: string]: Deferred<DelightRPC.IResponse<any>> } = {}
+  const pendings: { [id: string]: Deferred<IResponse<any>> } = {}
 
   // mock-socket is buggy, `socket.addEventListener` cannot work!
   socket.on('message', handler)
 
   const client = DelightRPC.createClient<IAPI>(
     async function send(request) {
-      const res = new Deferred<DelightRPC.IResponse<any>>()
+      const res = new Deferred<IResponse<any>>()
       pendings[request.id] = res
       try {
         socket.send(JSON.stringify(request))
