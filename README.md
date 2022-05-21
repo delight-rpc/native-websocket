@@ -39,6 +39,7 @@ function createServer<IAPI extends object>(
     parameterValidators?: DelightRPC.ParameterValidators<IAPI>
     version?: `${number}.${number}.${number}`
     channel?: string
+    ownPropsOnly?: boolean
   }
 ): () => void
 ```
