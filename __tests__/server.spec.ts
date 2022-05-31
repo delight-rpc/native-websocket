@@ -30,6 +30,7 @@ beforeEach(() => {
     const client = createTestClient(socket)
 
     // mock-socket is buggy, `socket.addEventListener` cannot work!
+    // https://github.com/thoov/mock-socket/pull/192
     socket.on('message', async data => {
       if (isString(data)) {
         const req = JSON.parse(data)
@@ -86,6 +87,7 @@ function createTestClient<IAPI extends object>(
   const pendings: { [id: string]: Deferred<IResponse<any>> } = {}
 
   // mock-socket is buggy, `socket.addEventListener` cannot work!
+  // https://github.com/thoov/mock-socket/pull/192
   socket.on('message', handler)
 
   const client = DelightRPC.createClient<IAPI>(

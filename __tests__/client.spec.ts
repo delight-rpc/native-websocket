@@ -17,6 +17,7 @@ beforeEach(() => {
   mockServer = new Server(SERVER_URL)
   mockServer.on('connection', socket => {
     // mock-socket is buggy, `socket.addEventListener` cannot work!
+    // https://github.com/thoov/mock-socket/pull/192
     socket.on('message', async data => {
       if (isString(data)) {
         const req = getResult(() => JSON.parse(data))
