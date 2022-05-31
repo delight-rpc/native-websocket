@@ -1,9 +1,8 @@
-import { Server } from 'mock-socket'
 import { createClient } from '@src/client'
 import { waitForEventTarget } from '@blackglory/wait-for'
-import * as DelightRPC from 'delight-rpc'
-import { isString } from '@blackglory/types'
-import { getResult, getErrorPromise } from 'return-style'
+import { getErrorPromise } from 'return-style'
+import { Server, WebSocketServer } from 'ws'
+import * as DelightRPCWebSocket from '@delight-rpc/websocket'
 
 interface IAPI {
   echo(message: string): string
@@ -12,32 +11,22 @@ interface IAPI {
 
 const SERVER_URL = 'ws://localhost:8080'
 
-let mockServer: Server
+let server: WebSocketServer
 beforeEach(() => {
-  mockServer = new Server(SERVER_URL)
-  mockServer.on('connection', socket => {
-    // mock-socket is buggy, `socket.addEventListener` cannot work!
-    // https://github.com/thoov/mock-socket/pull/192
-    socket.on('message', async data => {
-      if (isString(data)) {
-        const req = getResult(() => JSON.parse(data))
-        if (DelightRPC.isRequest(req)) {
-          const res = await DelightRPC.createResponse<IAPI, unknown>({
-            echo(message) {
-              return message
-            }
-          , error(message) {
-              throw new Error(message)
-            }
-          }, req)
-          socket.send(JSON.stringify(res))
-        }
+  server = new Server({ port: 8080 })
+  server.on('connection', socket => {
+    const cancelServer = DelightRPCWebSocket.createServer<IAPI>({
+      echo(message) {
+        return message
       }
-    })
+    , error(message) {
+        throw new Error(message)
+      }
+    }, socket)
   })
 })
 afterEach(() => {
-  mockServer.close()
+  server.close()
 })
 
 describe('createClient', () => {
