@@ -1,5 +1,5 @@
 {
-  "name": "@delight-rpc/websocket-browser",
+  "name": "@delight-rpc/native-websocket",
   "version": "0.4.3",
   "description": "",
   "keywords": [],
@@ -8,7 +8,7 @@
   ],
   "main": "lib/es2018/index.js",
   "types": "lib/es2018/index.d.ts",
-  "repository": "git@github.com:delight-rpc/websocket-browser.git",
+  "repository": "git@github.com:delight-rpc/native-websocket.git",
   "author": "BlackGlory <woshenmedoubuzhidao@blackglory.me>",
   "license": "MIT",
   "scripts": {

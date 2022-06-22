@@ -1,9 +1,9 @@
-# @delight-rpc/websocket-browser
+# @delight-rpc/native-websocket
 ## Install
 ```sh
-npm install --save @delight-rpc/websocket-browser
+npm install --save @delight-rpc/native-websocket
 # or
-yarn add @delight-rpc/websocket-browser
+yarn add @delight-rpc/native-websocket
 ```
 
 ## API
