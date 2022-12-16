@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/delight-rpc/native-websocket/compare/v0.4.5...v0.5.0) (2022-12-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* - The minimal version of Node.js is 16
+- It requires delight-rpc@^5.0.0
+
+* upgrade dependencies ([02c05bb](https://github.com/delight-rpc/native-websocket/commit/02c05bba37dd537d721286df90ae1330e87320d5))
+
 ### [0.4.5](https://github.com/delight-rpc/native-websocket/compare/v0.4.4...v0.4.5) (2022-08-01)
 
 ### [0.4.4](https://github.com/delight-rpc/native-websocket/compare/v0.4.3...v0.4.4) (2022-06-22)
