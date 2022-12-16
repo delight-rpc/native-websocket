@@ -10,7 +10,7 @@ export function createClient<IAPI extends object>(
   socket: WebSocket
 , { parameterValidators, expectedVersion, channel, timeout }: {
     parameterValidators?: DelightRPC.ParameterValidators<IAPI>
-    expectedVersion?: `${number}.${number}.${number}`
+    expectedVersion?: string
     channel?: string
     timeout?: number
   } = {}
@@ -62,7 +62,7 @@ export function createClient<IAPI extends object>(
 export function createBatchClient(
   socket: WebSocket
 , { expectedVersion, channel, timeout }: {
-    expectedVersion?: `${number}.${number}.${number}`
+    expectedVersion?: string
     channel?: string
     timeout?: number
   } = {}
