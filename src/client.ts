@@ -15,7 +15,11 @@ export function createClient<IAPI extends object>(
     timeout?: number
   } = {}
 ): [client: DelightRPC.ClientProxy<IAPI>, close: () => void] {
-  const pendings: { [id: string]: Deferred<IResponse<unknown>> } = {}
+  const pendings: Record<
+    string
+  , | Deferred<IResponse<unknown>>
+    | undefined
+  > = {}
 
   socket.addEventListener('message', handler)
 
@@ -46,7 +50,7 @@ export function createClient<IAPI extends object>(
   function close(): void {
     socket.removeEventListener('message', handler as any)
     for (const [key, deferred] of Object.entries(pendings)) {
-      deferred.reject(new ClientClosed())
+      deferred!.reject(new ClientClosed())
       delete pendings[key]
     }
   }
@@ -54,7 +58,7 @@ export function createClient<IAPI extends object>(
   function handler(event: MessageEvent): void {
     const res = getResult(() => JSON.parse(event.data))
     if (DelightRPC.isResult(res) || DelightRPC.isError(res)) {
-      pendings[res.id].resolve(res)
+      pendings[res.id]?.resolve(res)
     }
   }
 }
@@ -67,12 +71,11 @@ export function createBatchClient(
     timeout?: number
   } = {}
 ): [client: DelightRPC.BatchClient, close: () => void] {
-  const pendings: {
-    [id: string]: Deferred<
-    | IError
-    | IBatchResponse<unknown>
-    >
-  } = {}
+  const pendings: Record<
+    string
+  , | Deferred<IError | IBatchResponse<unknown>>
+    | undefined
+  > = {}
 
   socket.addEventListener('message', handler)
 
@@ -105,7 +108,7 @@ export function createBatchClient(
   function close(): void {
     socket.removeEventListener('message', handler as any)
     for (const [key, deferred] of Object.entries(pendings)) {
-      deferred.reject(new ClientClosed())
+      deferred!.reject(new ClientClosed())
       delete pendings[key]
     }
   }
@@ -113,7 +116,7 @@ export function createBatchClient(
   function handler(event: MessageEvent): void {
     const res = getResult(() => JSON.parse(event.data))
     if (DelightRPC.isError(res) || DelightRPC.isBatchResponse(res)) {
-      pendings[res.id].resolve(res)
+      pendings[res.id]?.resolve(res)
     }
   }
 }
