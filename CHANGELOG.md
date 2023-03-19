@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/delight-rpc/native-websocket/compare/v0.5.1...v0.6.0) (2023-03-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* CommonJS => ESM
+
+* upgrade dependencies ([a7e2896](https://github.com/delight-rpc/native-websocket/commit/a7e2896f4a688d6ed29f2e04c2eb22e80de39bdc))
+
 ### [0.5.1](https://github.com/delight-rpc/native-websocket/compare/v0.5.0...v0.5.1) (2023-02-05)
 
 ## [0.5.0](https://github.com/delight-rpc/native-websocket/compare/v0.4.5...v0.5.0) (2022-12-16)
