@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.2](https://github.com/delight-rpc/native-websocket/compare/v0.6.1...v0.6.2) (2023-06-11)
+
+
+### Bug Fixes
+
+* export src ([72208fc](https://github.com/delight-rpc/native-websocket/commit/72208fc7cebe097fff3600f434ade0d0cb4cfffa))
+
 ### [0.6.1](https://github.com/delight-rpc/native-websocket/compare/v0.6.0...v0.6.1) (2023-03-19)
 
 ## [0.6.0](https://github.com/delight-rpc/native-websocket/compare/v0.5.1...v0.6.0) (2023-03-19)
