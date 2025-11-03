@@ -15,18 +15,17 @@ export function createClient<IAPI extends object>(
     timeout?: number
   } = {}
 ): [client: DelightRPC.ClientProxy<IAPI>, close: () => void] {
-  const pendings: Record<
+  const pendings: Map<
     string
-  , | Deferred<IResponse<unknown>>
-    | undefined
-  > = {}
+  , Deferred<IResponse<unknown>>
+  > = new Map()
 
   socket.addEventListener('message', handler)
 
   const client = DelightRPC.createClient<IAPI>(
     async function send(request) {
       const res = new Deferred<IResponse<unknown>>()
-      pendings[request.id] = res
+      pendings.set(request.id, res)
       try {
         socket.send(JSON.stringify(request))
         if (isUndefined(timeout)) {
@@ -35,7 +34,7 @@ export function createClient<IAPI extends object>(
           return await withAbortSignal(timeoutSignal(timeout), () => res)
         }
       } finally {
-        delete pendings[request.id]
+        pendings.delete(request.id)
       }
     }
   , {
@@ -50,15 +49,15 @@ export function createClient<IAPI extends object>(
   function close(): void {
     socket.removeEventListener('message', handler as any)
     for (const [key, deferred] of Object.entries(pendings)) {
-      deferred!.reject(new ClientClosed())
-      delete pendings[key]
+      deferred.reject(new ClientClosed())
+      pendings.delete(key)
     }
   }
 
   function handler(event: MessageEvent): void {
     const res = getResult(() => JSON.parse(event.data))
     if (DelightRPC.isResult(res) || DelightRPC.isError(res)) {
-      pendings[res.id]?.resolve(res)
+      pendings.get(res.id)?.resolve(res)
     }
   }
 }
@@ -71,11 +70,10 @@ export function createBatchClient(
     timeout?: number
   } = {}
 ): [client: DelightRPC.BatchClient, close: () => void] {
-  const pendings: Record<
+  const pendings: Map<
     string
-  , | Deferred<IError | IBatchResponse<unknown>>
-    | undefined
-  > = {}
+  , Deferred<IError | IBatchResponse<unknown>>
+  > = new Map()
 
   socket.addEventListener('message', handler)
 
@@ -85,7 +83,7 @@ export function createBatchClient(
       | IError
       | IBatchResponse<unknown>
       >()
-      pendings[request.id] = res
+      pendings.set(request.id, res)
       try {
         socket.send(JSON.stringify(request))
         if (isUndefined(timeout)) {
@@ -94,7 +92,7 @@ export function createBatchClient(
           return await withAbortSignal(timeoutSignal(timeout), () => res)
         }
       } finally {
-        delete pendings[request.id]
+        pendings.delete(request.id)
       }
     }
   , {
@@ -108,15 +106,15 @@ export function createBatchClient(
   function close(): void {
     socket.removeEventListener('message', handler as any)
     for (const [key, deferred] of Object.entries(pendings)) {
-      deferred!.reject(new ClientClosed())
-      delete pendings[key]
+      deferred.reject(new ClientClosed())
+      pendings.delete(key)
     }
   }
 
   function handler(event: MessageEvent): void {
     const res = getResult(() => JSON.parse(event.data))
     if (DelightRPC.isError(res) || DelightRPC.isBatchResponse(res)) {
-      pendings[res.id]?.resolve(res)
+      pendings.get(res.id)?.resolve(res)
     }
   }
 }
