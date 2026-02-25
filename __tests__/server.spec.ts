@@ -1,3 +1,4 @@
+import { beforeEach, afterEach, describe, test, expect } from 'vitest'
 import { waitForEventTarget } from '@blackglory/wait-for'
 import { WebSocketServer } from 'ws'
 import { createServer } from '@src/server.js'

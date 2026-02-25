@@ -1,3 +1,4 @@
+import { beforeEach, afterEach, describe, test, expect } from 'vitest'
 import { createBatchClient, createClient } from '@src/client.js'
 import { waitForEventTarget } from '@blackglory/wait-for'
 import { getErrorPromise } from 'return-style'

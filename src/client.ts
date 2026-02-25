@@ -74,10 +74,7 @@ export function createBatchClient(
     timeout?: number
   } = {}
 ): [client: DelightRPC.BatchClient, close: () => void] {
-  const pendings: Map<
-    string
-  , Deferred<IError | IBatchResponse<unknown>>
-  > = new Map()
+  const pendings: Map<string, Deferred<IError | IBatchResponse<unknown>>> = new Map()
 
   socket.addEventListener('message', handler)
 
