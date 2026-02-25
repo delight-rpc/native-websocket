@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.5](https://github.com/delight-rpc/native-websocket/compare/v0.6.4...v0.6.5) (2026-02-25)
+
+
+### Features
+
+* add support for DelightRPC.Abort ([e6f67bb](https://github.com/delight-rpc/native-websocket/commit/e6f67bb2822105153e1eb1fed63d2890f9e2964e))
+
 ### [0.6.4](https://github.com/delight-rpc/native-websocket/compare/v0.6.3...v0.6.4) (2026-02-12)
 
 
