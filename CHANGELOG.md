@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/delight-rpc/native-websocket/compare/v0.6.5...v0.7.0) (2026-02-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **server:** Node.js v16 => Node.js v22
+
+### Bug Fixes
+
+* **server:** abort request by channel fields ([3d3c12e](https://github.com/delight-rpc/native-websocket/commit/3d3c12ec959ac5734b1d978ffeba3ad47ed6494c))
+
 ### [0.6.5](https://github.com/delight-rpc/native-websocket/compare/v0.6.4...v0.6.5) (2026-02-25)
 
 
