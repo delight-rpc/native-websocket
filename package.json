@@ -45,7 +45,7 @@
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
     "cross-env": "^7.0.3",
-    "delight-rpc": "^6.0.0",
+    "delight-rpc": "^6.1.2",
     "eslint": "8.36.0",
     "extra-filesystem": "^0.4.8",
     "husky": "4",

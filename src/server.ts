@@ -12,15 +12,25 @@ export function createServer<IAPI extends object>(
     ownPropsOnly?: boolean
   } = {}
 ): () => void {
+  const idToController: Map<string, AbortController> = new Map()
+
   socket.addEventListener('message', handler)
+  socket.addEventListener('close', () => {
+    for (const controller of idToController.values()) {
+      controller.abort()
+    }
+
+    idToController.clear()
+  })
+
   return () => socket.removeEventListener('message', handler)
 
   async function handler(event: MessageEvent): Promise<void> {
-    const request = getResult(() => JSON.parse(event.data))
-    if (DelightRPC.isRequest(request) || DelightRPC.isBatchRequest(request)) {
+    const payload = getResult(() => JSON.parse(event.data))
+    if (DelightRPC.isRequest(payload) || DelightRPC.isBatchRequest(payload)) {
       const response = await DelightRPC.createResponse(
         api
-      , request
+      , payload
       , {
           parameterValidators
         , version
@@ -31,6 +41,11 @@ export function createServer<IAPI extends object>(
 
       if (isntNull(response)) {
         socket.send(JSON.stringify(response))
+      }
+    } else if (DelightRPC.isAbort(payload)) {
+      if (DelightRPC.matchChannel(payload, channel)) {
+        idToController.get(payload.id)?.abort()
+        idToController.delete(payload.id)
       }
     }
   }
