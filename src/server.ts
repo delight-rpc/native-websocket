@@ -1,6 +1,7 @@
 import * as DelightRPC from 'delight-rpc'
 import { getResult } from 'return-style'
 import { isntNull } from '@blackglory/prelude'
+import { AbortController } from 'extra-abort'
 
 export function createServer<IAPI extends object>(
   api: DelightRPC.ImplementationOf<IAPI>
@@ -22,30 +23,37 @@ export function createServer<IAPI extends object>(
 
     idToController.clear()
   })
-
   return () => socket.removeEventListener('message', handler)
 
   async function handler(event: MessageEvent): Promise<void> {
-    const payload = getResult(() => JSON.parse(event.data))
-    if (DelightRPC.isRequest(payload) || DelightRPC.isBatchRequest(payload)) {
-      const response = await DelightRPC.createResponse(
-        api
-      , payload
-      , {
-          parameterValidators
-        , version
-        , channel
-        , ownPropsOnly
-        }
-      )
+    const message = getResult(() => JSON.parse(event.data))
+    if (DelightRPC.isRequest(message) || DelightRPC.isBatchRequest(message)) {
+      const controller = new AbortController()
+      idToController.set(message.id, controller)
 
-      if (isntNull(response)) {
-        socket.send(JSON.stringify(response))
+      try {
+        const response = await DelightRPC.createResponse(
+          api
+        , message
+        , {
+            parameterValidators
+          , version
+          , channel
+          , ownPropsOnly
+          , signal: controller.signal
+          }
+        )
+
+        if (isntNull(response)) {
+          socket.send(JSON.stringify(response))
+        }
+      } finally {
+        idToController.delete(message.id)
       }
-    } else if (DelightRPC.isAbort(payload)) {
-      if (DelightRPC.matchChannel(payload, channel)) {
-        idToController.get(payload.id)?.abort()
-        idToController.delete(payload.id)
+    } else if (DelightRPC.isAbort(message)) {
+      if (DelightRPC.matchChannel(message, channel)) {
+        idToController.get(message.id)?.abort()
+        idToController.delete(message.id)
       }
     }
   }

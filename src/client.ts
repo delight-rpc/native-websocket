@@ -4,7 +4,7 @@ import { CustomError } from '@blackglory/errors'
 import { getResult } from 'return-style'
 import { IResponse, IError, IBatchResponse } from '@delight-rpc/protocol'
 import { withAbortSignal, timeoutSignal, raceAbortSignals } from 'extra-abort'
-import { isntUndefined, isUndefined } from '@blackglory/prelude'
+import { isntUndefined } from '@blackglory/prelude'
 
 export function createClient<IAPI extends object>(
   socket: WebSocket

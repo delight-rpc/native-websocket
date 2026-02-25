@@ -4,7 +4,9 @@ import { createServer } from '@src/server.js'
 import { createClient } from '@src/client.js'
 import { getErrorPromise } from 'return-style'
 import * as DelightRPCWebSocket from '@delight-rpc/websocket'
-import { promisify } from 'extra-promise'
+import { delay, promisify } from 'extra-promise'
+import { assert } from '@blackglory/errors'
+import { AbortError } from 'extra-abort'
 
 interface IAPI {
   eval(code: string): Promise<unknown>
@@ -18,6 +20,15 @@ const api = {
   }
 , error(message: string): never {
     throw new Error(message)
+  }
+, async loop(signal?: AbortSignal): Promise<never> {
+    assert(signal)
+
+    while (!signal.aborted) {
+      await delay(100)
+    }
+
+    throw signal.reason
   }
 }
 
@@ -38,14 +49,16 @@ afterEach(async () => {
 })
 
 describe('createServer', () => {
-  test('echo', async () => {
+  test('result', async () => {
     const wsClient = new WebSocket(SERVER_URL)
     await waitForEventTarget(wsClient, 'open')
 
     const cancelServer = createServer(api, wsClient)
     const [client, close] = createClient<IAPI>(wsClient)
     try {
-      const result = await client.eval('client.echo("hello")')
+      const result = await client.eval(`
+        client.echo('hello')
+      `)
 
       expect(result).toBe('hello')
     } finally {
@@ -61,10 +74,33 @@ describe('createServer', () => {
     const cancelServer = createServer(api, wsClient)
     const [client, close] = createClient<IAPI>(wsClient)
     try {
-      const err = await getErrorPromise(client.eval('client.error("hello")'))
+      const err = await getErrorPromise(client.eval(`
+        client.error('hello')
+      `))
 
       expect(err).toBeInstanceOf(Error)
       expect(err!.message).toMatch('hello')
+    } finally {
+      wsClient.close()
+      cancelServer()
+    }
+  })
+
+  test('abort', async () => {
+    const wsClient = new WebSocket(SERVER_URL)
+    await waitForEventTarget(wsClient, 'open')
+
+    const cancelServer = createServer(api, wsClient)
+    const [client, close] = createClient<IAPI>(wsClient)
+    try {
+      const err = await getErrorPromise(client.eval(`
+        const controller = new AbortController()
+        const promise = client.loop(controller.signal)
+        controller.abort()
+        promise
+      `))
+
+      expect(err).toBeInstanceOf(AbortError)
     } finally {
       wsClient.close()
       cancelServer()
