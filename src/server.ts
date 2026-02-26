@@ -3,6 +3,7 @@ import { getResult } from 'return-style'
 import { isntNull } from '@blackglory/prelude'
 import { AbortController } from 'extra-abort'
 import { HashMap } from '@blackglory/structures'
+import { SyncDestructor } from 'extra-defer'
 
 export function createServer<IAPI extends object>(
   api: DelightRPC.ImplementationOf<IAPI>
@@ -14,6 +15,8 @@ export function createServer<IAPI extends object>(
     ownPropsOnly?: boolean
   } = {}
 ): () => void {
+  const destructor = new SyncDestructor()
+
   const channelIdToController: HashMap<
     {
       channel?: string
@@ -21,22 +24,24 @@ export function createServer<IAPI extends object>(
     }
   , AbortController
   > = new HashMap(({ channel, id }) => JSON.stringify([channel, id]))
+  destructor.defer(abortAllPendings)
 
-  socket.addEventListener('message', handler)
-  socket.addEventListener('close', () => {
-    for (const controller of channelIdToController.values()) {
-      controller.abort()
-    }
+  socket.addEventListener('message', receive)
+  destructor.defer(() => socket.removeEventListener('message', receive))
 
-    channelIdToController.clear()
-  })
-  return () => socket.removeEventListener('message', handler)
+  socket.addEventListener('close', close)
+  destructor.defer(() => socket.removeEventListener('close', close))
 
-  async function handler(event: MessageEvent): Promise<void> {
+  return close
+
+  async function receive(event: MessageEvent): Promise<void> {
     const message = getResult(() => JSON.parse(event.data))
     if (DelightRPC.isRequest(message) || DelightRPC.isBatchRequest(message)) {
+      const destructor = new SyncDestructor()
+
       const controller = new AbortController()
       channelIdToController.set(message, controller)
+      destructor.defer(() => channelIdToController.delete(message))
 
       try {
         const response = await DelightRPC.createResponse(
@@ -55,7 +60,7 @@ export function createServer<IAPI extends object>(
           socket.send(JSON.stringify(response))
         }
       } finally {
-        channelIdToController.delete(message)
+        destructor.execute()
       }
     } else if (DelightRPC.isAbort(message)) {
       if (DelightRPC.matchChannel(message, channel)) {
@@ -63,5 +68,17 @@ export function createServer<IAPI extends object>(
         channelIdToController.delete(message)
       }
     }
+  }
+
+  function close(): void {
+    destructor.execute()
+  }
+
+  function abortAllPendings(): void {
+    for (const controller of channelIdToController.values()) {
+      controller.abort()
+    }
+
+    channelIdToController.clear()
   }
 }
